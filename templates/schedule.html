@@ -1,0 +1,43 @@
+{% extends "header.html" %}
+
+{% block body %}
+
+<div class="animate fadeIn">
+    <div class="row">
+        <div class="col-xs-6 col-sm-6">
+            <div class="card">
+                <div class="card-header">
+                    <strong class="card-title">Select to send email</strong>
+                </div>
+                <div class="card-body">
+                    <form action="{{ url_for('admin_schedule_success') }}" method="POST" novalidate="novalidate">
+                        <label class="form-control-label">Select Semester</label>
+                        <select name="semester" data-placeholder="Choose a Semester..." class="standardSelect" tabindex="1">
+                            <option value="" label="default"></option>
+                            {% for semester in SEMESTER_LIST %}
+                            <option value="{{ semester }}">{{ semester }}</option>
+                            {% endfor %}
+                        </select>
+                        <hr>
+                        <label class="form-control-label">Select Form</label>
+                        <select name="semester" data-placeholder="Choose a form to send..." class="standardSelect" tabindex="1">
+                            <option value="" label="default"></option>
+                            {% for form in FORMS_LIST %}
+                            <option value="{{ form }}">{{ form }}</option>
+                            {% endfor %}
+                        </select>
+                        <hr>
+                        <label class="form-control-label">Enter Maximum Lockin period in days</label>
+                        <input name="lockin_days" type="number" class="form-control" aria-required="true" aria-invalid="false">
+                        <hr>
+                        <button type="submit" class="btn btn-lg btn-info btn-block">
+                            <span>Send Email</span>
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

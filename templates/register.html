@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<title>Registration for Feedback Form System</title>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+    
+    <!-- Latest compiled and minified CSS -->
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+
+</head>
+
+<body>
+    <!--div class="container-fluid">
+        <div class="row">
+            <h3>Register for Feedback System Project Phase.</h3>
+        </div>
+        <div class="row">
+            <form action="{{ url_for('registered') }}" method="POST" class="">
+        <span>Enter your Enrollment Number : <input type="number" name="enrollment_number" class=""></span><br>
+        <span>Enter your First Name : <input type="text" name="first_name"></span><br>
+        <span>Enter your Last Name : <input type="text" name="last_name"></span><br>
+        <span>Select your institute :
+            <input type="radio" value="PIET" name="institute_name">PIET
+            <input type="radio" value="PIT" name="institute_name">PIT
+        </span><br>
+        <span>Select your department :
+            <input type="radio" value="CSE" name="department_name">CSE
+            <input type="radio" value="MECH" name="department_name">MECH
+            <input type="radio" value="EC" name="department_name">EC
+            <input type="radio" value="EE" name="department_name">EE
+        </span><br>
+        <span>Select your semester :
+            <input type="radio" value="8" name="semester">8th
+            <input type="radio" value="6" name="semester">6th
+            <input type="radio" value="4" name="semester">4th
+            <input type="radio" value="2" name="semester">2nd
+        </span><br>
+        
+        <span>Enter your Class : <input type="text" name="class"> <i>e.g: B1, A2, etc.</i></span><br>
+        <span>Enter your personal email-id : <input type="text" name="email"></span><br>
+        <span>Enter your mobile phone number : <input type="number" name="mobile_phone_number"></span><br>
+        <button type="submit">
+            <span>Submit</span>
+	    </button>
+    </form>
+        </div>
+        
+    
+    </div-->
+    
+    <div class="container">
+        
+        <div class="row text-center">
+            <h3><strong>Registration Form.</strong></h3>
+        </div><hr>
+    <div class="row">
+            <form method="POST" action="{{ url_for('registered') }}">    
+            <div class="form-group">
+            <label for="exampleInputEmail1"><i>Enter Your Enrollment number.</i></label>
+            <input type="number" class="form-control" id="exampleInputEmail1" placeholder="Your Enrollment number here." name="enrollment_number">
+            </div>
+                
+            <div class="form-group">
+            <label for="exampleInputEmail1">Enter your first name.</label>
+            <input type="text" class="form-control" id="exampleInputEmail1" placeholder="First Name Here." name="first_name">
+            </div>
+                
+            <div class="form-group">
+            <label for="exampleInputEmail1">Enter your last name.</label>
+            <input type="text" class="form-control" id="exampleInputEmail1" placeholder="Last Name Here." name="last_name">
+            </div><hr>
+                
+            <div class="form-group">
+                <label>Select your institute.</label>
+                <div class="radio">
+                    <label><input type="radio" value="PIET" name="institute_name" checked>PIET</label>
+                </div>
+                <div class="radio">
+                    <label><input type="radio" value="PIT" name="institute_name">PIT</label>
+                </div>
+            </div>
+                
+            <div class="form-group">
+                <label>Select your department.</label>
+                <div class="radio">
+                    <label><input type="radio" value="CSE" name="department_name" checked>CSE</label>
+                </div>
+                <div class="radio">
+                    <label><input type="radio" value="MECH" name="department_name">MECH</label>
+                </div>
+                <div class="radio">
+                    <label><input type="radio" value="EE" name="department_name">EE</label>
+                </div>
+                <div class="radio">
+                    <label><input type="radio" value="EC" name="department_name">EC</label>
+                </div>
+            </div>
+                
+            <div class="form-group">
+                <label>Select your semester.</label>
+                <div class="radio">
+                    <label><input type="radio" value="8" name="semester" checked>8th</label>
+                </div>
+                <div class="radio">
+                    <label><input type="radio" value="6" name="semester">6th</label>
+                </div>
+                <div class="radio">
+                    <label><input type="radio" value="4" name="semester">4th</label>
+                </div>
+                <div class="radio">
+                    <label><input type="radio" value="2" name="semester">2nd</label>
+                </div>
+            </div><hr>
+                
+            <div class="form-group">
+            <label for="exampleInputEmail1">Enter your class. <em>e.g: B1, A2, etc.</em></label>
+            <input type="text" class="form-control" id="exampleInputEmail1" name="class">
+            </div>
+                
+            <div class="form-group">
+            <label for="exampleInputEmail1">Enter your email id.</label>
+            <input type="text" class="form-control" id="exampleInputEmail1" name="email">
+            </div>
+                
+            <div class="form-group">
+            <label for="exampleInputEmail1">Enter your mobile number.</label>
+            <input type="text" class="form-control" id="exampleInputEmail1"  name="mobile_phone_number">
+            </div><hr>
+                
+            <button type="submit" class="btn btn-default center-block">Submit</button>
+            </form>
+        
+    </div>
+        <div class="row text-center"><span><u>CodingPrivacy</u></span></div>
+        </div>
+</body>
+
+</html>
