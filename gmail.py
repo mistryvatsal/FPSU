@@ -46,13 +46,6 @@ def create_message(to, subject, msgHTML):
     return body
 
 
-     #message = MIMEText(message_text)
-    # message['to'] = to
-     #message['from'] = sender
-     #message['subject'] = subject
-     #return {'raw': base64.urlsafe_b64encode(message.as_string())}
-
-
 def send_message_internal(service, user_id, message):
     try:
         message = (service.users().messages().send(userId=user_id, body=message).execute())

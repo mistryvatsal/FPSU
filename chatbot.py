@@ -1,9 +1,11 @@
 from flask import Flask,request,render_template
 import time
+import json
 from flask_socketio  import SocketIO, emit
 from backend_final import default
 from backend_final import custom
 import intro
+
 
 app = Flask(__name__)
 socketio = SocketIO(app)
@@ -26,6 +28,10 @@ def handleMessage(msg):
     with open('backend_final/images/nirali_naik.jpg', 'rb') as f:
         image_data = f.read()
         emit('get_faculty', {'image_data': image_data.encode('base64'),'fac_name':intro_result[1],'fac_desig':intro_result[2],'fac_dept':intro_result[3],'fac_insti':intro_result[4],'fac_mail':intro_result[5]})
+        #print('get_faculty_done')
+    #getting suggestions
+    f=open('backend_final/corpus_pool/suggestions.json','r')
+    emit('suggestions',json.load(f))
         #print('get_faculty_done')
 
 @socketio.on('greet_event')

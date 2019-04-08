@@ -1,5 +1,8 @@
 import os
 import json
+from mysql_dbconnect import *
+import gc
+
 
 forms_dir_path = "/var/www/FPSU/FPSU/forms/"
 
@@ -24,3 +27,16 @@ def list_out_forms():
 
 def count_forms():
     return len(list_out_forms())
+
+def get_class_list(semester):
+    c, conn =  connect_to("pumis")
+    c.execute("SELECT class FROM semester_info WHERE semester IN (%s)", str(semester))
+    x = c.fetchall()
+    c.close()
+    conn.close()
+    gc.collect()
+    class_list = list()
+    for i in x:
+        class_list.append(i[0])
+
+    return class_list

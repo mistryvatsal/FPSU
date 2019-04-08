@@ -37,9 +37,9 @@ def generate_string():
         sem = str(i[3])
         stu_class = str(i[4])
         subject_fpsu_code = str(i[5])
-        generated_str = enr_num[9] + f_name[0] + enr_num[10] + l_name[0] + enr_num[11] + sem + stu_class + subject_fpsu_code
+        generated_code = enr_num[9] + f_name[0] + enr_num[10] + l_name[0] + enr_num[11] + sem + stu_class + subject_fpsu_code
         count+=1
-        encrypted_string = encrypt_string(generated_str)
+        encrypted_string = encrypt_string(generated_code)
         decrypted_string = decrypt_string(encrypted_string)
         save_to_db(encrypted_string, enr_num)
 

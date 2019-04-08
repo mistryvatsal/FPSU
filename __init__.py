@@ -1,11 +1,18 @@
-from flask import Flask, render_template, request, redirect, flash, url_for, session
+from flask import Flask, render_template, request, redirect, flash, url_for, session, jsonify
 from mysql_dbconnect import *
 from pymysql import escape_string as thwart
 from bokeh.embed import components
 from graphs import *
 from secret_hash import *
 from functools import wraps
-import customjsonfunc
+
+from flask_sqlalchemy import SQLAlchemy
+from flask_wtf import FlaskForm
+from wtforms import SelectField
+
+import customfunc
+import execute_schedule
+import _email
 import gc
 import os
 import json
@@ -14,25 +21,16 @@ import json
 #Creating the Flask app.
 app = Flask(__name__)
 
+
+class Multi_Select_Form(FlaskForm):
+    semester_type = SelectField('semester_type', choices=[('default', 'Select any entry'), ('even', 'Even'), ('odd', 'Odd')])
+    semester_list = SelectField('semester_list', choices=[])
+    class_list = SelectField('class_list', choices=[])
+
+
 @app.errorhandler(404)
 def page_not_found(error):
     return render_template("404.html"), 404
-
-
-@app.route('/admin/temp/')
-def admin_temp():
-    return render_template("temp.html")
-
-
-@app.route('/admin/dashboard/analysis/displaygraph/', methods = ['POST'])
-def display_graph():
-    bargraph_obj = call_bar_graph()
-    bargraph_div, bargraph_script = components(bargraph_obj)
-
-    timeline_obj = call_year_graph()
-    timeline_div, timeline_script = components(timeline_obj)
-
-    return render_template('display_graph.html', bargraph_div = bargraph_div, bargraph_script = bargraph_script, timeline_div = timeline_div, timeline_script = timeline_script)
 
 
 #Created a login_required wrapper function that wraps other functions in-order to force to do login first before accessing any pages.
@@ -45,32 +43,140 @@ def login_required(f):
             return redirect(url_for('admin_login'))
     return wrap
 
+
 #Route and function for about functionality.
 @app.route('/admin/about/', methods = ['GET', 'POST'])
 def admin_about():
     return render_template("about.html")
+
 
 #Route and function for logs functionality.
 @app.route('/admin/logs/', methods = ['GET', 'POST'])
 def admin_logs():
     return render_template("logs.html")
 
+
 #Route and function for schedule success functionality.
 @app.route('/admin/schedule/done/', methods = ['GET', 'POST'])
 def admin_schedule_success():
     if request.method == "POST":
         try:
-            err = "Email sending has been started. Thankyou."
-            return render_template("schedulesuccess.html", err=err)
+            semester_type = request.form['semester_type']
+            semester_list = request.form['semester_list']
+            class_list = request.form['class_list']
+
+            class_list_json = []
+            c, conn = connect_to("pumis")
+            if semester_list == "all":
+                if semester_type == "even":
+                    semester_list = ["2", "4", "6", "8"]
+                    for sem in semester_list:
+                        c.execute("SELECT class FROM semester_info WHERE semester IN (%s)", (sem))
+                        x = c.fetchall()
+                        for i in x:
+                            class_list_json_Obj = {}
+                            class_list_json_Obj['semester'] = sem
+                            class_list_json_Obj['class'] = i[0]
+                            class_list_json.append(class_list_json_Obj)
+
+                else:
+                    semester_list = ["1", "3", "5", "7"]
+                    for sem in semester_list:
+                        c.execute("SELECT class FROM semester_info WHERE semester IN (%s)", (sem))
+                        x = c.fetchall()
+                        for i in x:
+                            class_list_json_Obj = {}
+                            class_list_json_Obj['semester'] = sem
+                            class_list_json_Obj['class'] = i[0]
+                            class_list_json.append(class_list_json_Obj)
+
+                c.close()
+                conn.close()
+                gc.collect()
+
+            else:
+                if class_list == "all":
+                    c.execute("SELECT class FROM semester_info WHERE semester IN (%s)", (semester_list))
+                    x = c.fetchall()
+                    for i in x:
+                        class_list_json_Obj = {}
+                        class_list_json_Obj['semester'] = semester_list
+                        class_list_json_Obj['class'] = i[0]
+                        class_list_json.append(class_list_json_Obj)
+
+                    c.close()
+                    conn.close()
+                    gc.collect()
+
+                else:
+                    class_list_json_Obj = {}
+                    class_list_json_Obj['semester'] = semester_list
+                    class_list_json_Obj['class'] = class_list
+                    class_list_json.append(class_list_json_Obj)
+
+            semclass_combo = jsonify({"semclass_combo" : class_list_json}).get_data(as_text=True)
+            emailing_data = execute_schedule.generate_list(semclass_combo)
+            EMAIL_COUNT = 0
+            for row in emailing_data:
+                _email.send_email(row[1], row[2], row[3])
+                EMAIL_COUNT += 1
+
+            err = "Email has been sent successfully."
+            return render_template("schedule_success.html", err=err, EMAIL_COUNT = EMAIL_COUNT)
         except Exception as e:
-            return render_template("schedulesuccess.html", err=str(e))
+            return render_template("schedule_success.html", err=str(e))
+
 
 #Route and function for schedule functionality.
 @app.route('/admin/schedule/', methods = ['GET', 'POST'])
 def admin_schedule():
-    SEMESTER_LIST = ["8", "7", "6", "5", "4", "3", "2", "1"]
-    FORMS_LIST = customjsonfunc.list_out_forms()
-    return render_template("schedule.html", SEMESTER_LIST=SEMESTER_LIST, FORMS_LIST=FORMS_LIST)
+    multi_select_form = Multi_Select_Form()
+    multi_select_form.semester_list.choices = [("default", "Select any entry")]
+    multi_select_form.class_list.choices = [("default", "Select any entry")]
+    return render_template("schedule.html", form=multi_select_form)
+
+
+#Route for AJAX. Function to handle list of semesters.
+@app.route('/admin/schedule/semester/<semester_type>')
+def semester_list(semester_type):
+    semesterArray = []
+    if semester_type == "even":
+        semesters = [8, 6, 4, 2]
+        for sem in semesters:
+            semesterObj = {}
+            semesterObj['id'] = int(sem)
+            semesterObj['name'] = str(sem)
+            semesterArray.append(semesterObj)
+    else:
+        semesters = [7, 5, 3, 1]
+        for sem in semesters:
+            semesterObj = {}
+            semesterObj['id'] = int(sem)
+            semesterObj['name'] = str(sem)
+            semesterArray.append(semesterObj)
+    semesterObj = {}
+    semesterObj['id'] = "all"
+    semesterObj['name'] = "All"
+    semesterArray.append(semesterObj)
+    return jsonify({"semesters" : semesterArray})
+
+
+#Route for AJAX. Function to handle list of classes.
+@app.route('/admin/schedule/class/<semester>')
+def class_list(semester):
+    classArray = []
+    classes = customfunc.get_class_list(semester)
+    for _class in classes:
+        classObj = {}
+        classObj['id'] = _class
+        classObj['name'] = _class
+        classArray.append(classObj)
+    classObj = {}
+    classObj['id'] = "all"
+    classObj['name'] = "All"
+    classArray.append(classObj)
+    return jsonify({"classes" : classArray})
+
 
 #Route and function for analysis show report functionality. A next page for analysis.html
 @app.route('/admin/analysis/showreport/', methods = ['GET', 'POST'])
@@ -129,13 +235,13 @@ def admin_createform_success():
     try:
         err = ""
         if request.method == "POST":
-            FORMS_LIST_count = customjsonfunc.count_forms()
+            FORMS_LIST_count = customfunc.count_forms()
             form_name = request.form['form_name']
             new_quest_list = list()
             for i in range(1, 11):
                 new_quest_list.append(str(request.form["new_quest_" + str(i)]))
 
-            if customjsonfunc.jsonifyforms(form_name, new_quest_list) is True:
+            if customfunc.jsonifyforms(form_name, new_quest_list) is True:
                 err = "Your form is successfully saved and FPSU ChatBot has started learning from it!"
             else:
                 err = "Somthing went wrong. Try again."
@@ -149,9 +255,10 @@ def admin_createform_success():
 #Route and function for create form functionality.
 @app.route('/admin/createform/')
 def admin_createform():
-    FORMS_LIST = customjsonfunc.list_out_forms()
-    FORMS_LIST_count = customjsonfunc.count_forms()
+    FORMS_LIST = customfunc.list_out_forms()
+    FORMS_LIST_count = customfunc.count_forms()
     return render_template("createform.html", FORMS_LIST=FORMS_LIST, FORMS_LIST_count=FORMS_LIST_count)
+
 
 #Route and function for log out.
 @app.route('/admin/logout/')
@@ -193,111 +300,7 @@ def admin_login():
         return render_template("login.html", err=str(e)) #DEBUG PURPOSE : Exception Handling with passing exception message into jinja varialbe err.
 
 
-@app.route('/feedback_desc_part1/')
-def feedback_desc_part1():
-    try:
-        return render_template('feedback_desc_part1.html')
-    except Exception as e:
-        return str(e)
-
-@app.route('/feedback_desc_part2/')
-def feedback_desc_part2():
-    try:
-        return render_template('feedback_desc_part2.html')
-    except Exception as e:
-        return str(e)
-
-
-@app.route('/feedback_desc_part1_resp/', methods=['GET', 'POST'])
-def feedback_desc_part1_resp():
-    try:
-        qresp_list = list()
-        for i in range(1,6):
-            qresp_list.append(str(request.form['quest_' + str(i)]))
-
-        c, conn = connection_to_datahouse()
-        c.execute("INSERT INTO fdbck_resp_training VALUES(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)", (qresp_list[0], qresp_list[1], qresp_list[2],
-        qresp_list[3], qresp_list[4], "", "", "", "", ""))
-
-        conn.commit()
-        c.close()
-        conn.close()
-        gc.collect()
-        response_msg = "Thanks. Your response is recorded."
-        return render_template('feedback_desc_resp.html', response_msg = response_msg)
-    except Exception as e:
-        response_msg= "A record with your enrollment number already exists. You cannot fill in more."
-        return render_template('feedback_desc_resp.html', response_msg = response_msg + "\n" + str(e) )
-
-@app.route('/feedback_desc_part2_resp/', methods=['GET', 'POST'])
-def feedback_desc_part2_resp():
-    try:
-        qresp_list = list()
-        for i in range(6,11):
-            qresp_list.append(str(request.form['quest_' + str(i)]))
-
-        c, conn = connection_to_datahouse()
-        c.execute("INSERT INTO fdbck_resp_training VALUES(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)", ( "", "", "", "", "", qresp_list[0], qresp_list[1], qresp_list[2],
-        qresp_list[3], qresp_list[4]))
-
-        conn.commit()
-        c.close()
-        conn.close()
-        gc.collect()
-        response_msg = "Thanks. Your response is recorded."
-        return render_template('feedback_desc_resp.html', response_msg = response_msg)
-    except Exception as e:
-        response_msg= "A record with your enrollment number already exists. You cannot fill in more."
-        return render_template('feedback_desc_resp.html', response_msg = response_msg + "\n" + str(e) )
-
-# For registering student details for the system
-@app.route('/register/')
-def register():
-    return render_template('register.html')
-
-#Ack route and page for above defined function.
-@app.route('/registered/', methods = ['POST'])
-def registered():
-    enrollment_number = int(request.form['enrollment_number'])
-    first_name = str(request.form['first_name'])
-    last_name = str(request.form['last_name'])
-    institute_name = str(request.form['institute_name'])
-    department_name = str(request.form['department_name'])
-    semester = str(request.form['semester'])
-    student_class = str(request.form['class'])
-    email_id = str(request.form['email'])
-    mobile_phone_number = int(request.form['mobile_phone_number'])
-
-    c, conn = connection_to_pumis()
-    c.execute("INSERT INTO student VALUES(%s, %s, %s, %s, %s, %s, %s, %s, %s)", (enrollment_number, first_name, last_name, institute_name, department_name, semester, student_class, email_id, mobile_phone_number))
-    conn.commit()
-    c.close()
-    conn.close()
-    gc.collect()
-
-    return render_template('registered.html')
-
-
-@app.route('/student_table_resp/')
-def student_table_resp():
-    c, conn = connection_to_pumis()
-    c.execute("SELECT first_name, last_name, mobile_number FROM student")
-    response_data = c.fetchall()
-    count = 0
-    for x in response_data:
-        count += 1
-
-    return render_template('student_table_resp.html', student_table_response = response_data, total_count = count)
-
-@app.route('/resp/', methods = ['POST'])
-def resp():
-    ques_1_resp = request.form['ques_1_resp'] # Yes = 1, No = 0
-    ques_2_resp = request.form['ques_2_resp'] # Yes = 1, No = 0
-    ques_3_resp = request.form['ques_3_resp'] # Yes = 1, No = 0
-    ques_4_resp = request.form['ques_4_resp'] # Yes = 1, No = 0
-    ques_5_resp = request.form['ques_5_resp'] # Black Board = 1, Projector Aided = 0
-    return render_template('resp.html')
-
+#Route and function for chatbot with unique_route_string.
 @app.route('/chatbot/<unique_route_string>', methods=['GET'])
 def chatbot_page(unique_route_string):
     try:
@@ -323,9 +326,6 @@ def chatbot_page(unique_route_string):
         return render_template("chatbot.html")
     except Exception as e:
         return str(e)
-
-
-
 
 
 if __name__ == "__main__":

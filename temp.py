@@ -1,7 +1,6 @@
 from mysql_dbconnect import *
 import gc
 
-c, conn = connect_to("pumis")
 
 data = [
 ["Brijesh","Vala","BV","000","B1","8"],
@@ -70,11 +69,11 @@ faculty_new_data = [
 [25, "Jaydeep Viradiya", "JV", "PIET", "CSE", "Assistant Professor", "@", "123", "img"]
 ]
 
-for i in faculty_new_data:
-    c.execute("INSERT INTO faculty_new VALUES(%s, %s, %s, %s, %s, %s, %s, %s, %s)", (i[0], i[1], i[2], i[3], i[4], i[5], i[6], i[7], i[8]))
-
-conn.commit()
-c.close()
-conn.close()
-gc.collect()
-print("Done.")
+semester = "8"
+c, conn = connect_to("pumis")
+c.execute("SELECT class FROM semester_info WHERE semester=(%s)", (semester))
+x = c.fetchall()
+l = list()
+for i in x:
+    l.append(i[0])
+print(l)

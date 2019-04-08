@@ -104,7 +104,8 @@ li{
 #chatbox{	
 	
 	max-width:100%;
-	height: 84.4vh;
+	min-height:70.5vh; 
+	height: 70.5vh;
 	background: #FCFAF9;
 	
 }
@@ -152,6 +153,8 @@ li{
 
 #button-addon2{
 	background-color: #b0206b;
+	margin-top: 0px;
+	margin-bottom: 0px;
 }
 
 #reply_div{
@@ -176,24 +179,15 @@ li{
 #emoji{
 	border-top:1px solid #2E86AB;
 	border-radius:5%;
+	height: 20vh;
 	text-align: center;
 }
-#yes_btn{
+.btn-secondary{
 	display: inline-block;
 	padding:10px 20px;
-	margin-bottom:5px;
-	background-color: #b0206b;
-}
-#okay_btn{
-	display: inline-block;
-	padding:10px 20px;
-	margin-bottom:5px;
-	background-color: #b0206b;
-}
-#no_btn{
-	padding:10px 20px;
-	margin-bottom:5px;
-	display: inline-block;
+	margin:0px 10px;
+	margin-bottom:2px;
+	margin-top: 2px;
 	background-color: #b0206b;
 }
 
@@ -319,6 +313,7 @@ body{
 	width: 100px;
 }
 #start_chat_btn{
+	font-size: 15px;
 	background-color: #1b5066;
 }
 #only_mobile{
@@ -340,21 +335,14 @@ body{
 	margin-right: 3%;
 	padding:0px;
 }
-#yes_btn{
-	padding:7px 15px;
-}
-#no_btn{
-	padding:7px 15px;
-}
-#okay_btn{
-	padding:7px 15px;
+.btn-secondary{
+	font-size: 12px;
+	padding:8px;
+	margin: 2px;
 }
 #right_bar{
-	
-	height: 76.5vh;
+
 	width: 100vh;
-	
-	
 	border-radius: 2px;
 	
 	
@@ -377,14 +365,16 @@ li{
 }
 
 #chatbox{	
-	
-
+	min-height: 50vh;
+	height: 62vh;
 	width: 100vh;
-	height:100%;
+	
 	
 }
 
-
+#emoji{
+	height: 20vh;
+}
 #reply_div{
 
 	border:1px solid #2E86AB;
@@ -425,6 +415,7 @@ li{
 	
 }
 #button-addon2{
+
 	background-color: #b0206b;
 	color:#ffffff;
 	margin-left: 1vh;
@@ -443,7 +434,7 @@ li{
 
 #block_image_right{
 	width: 100%;
-	height:;
+	
 }
 
 }

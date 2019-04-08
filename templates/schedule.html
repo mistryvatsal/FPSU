@@ -9,27 +9,18 @@
                 <div class="card-header">
                     <strong class="card-title">Select to send email</strong>
                 </div>
-                <div class="card-body">
+                <div class="card-body">       
                     <form action="{{ url_for('admin_schedule_success') }}" method="POST" novalidate="novalidate">
-                        <label class="form-control-label">Select Semester</label>
-                        <select name="semester" data-placeholder="Choose a Semester..." class="standardSelect" tabindex="1">
-                            <option value="" label="default"></option>
-                            {% for semester in SEMESTER_LIST %}
-                            <option value="{{ semester }}">{{ semester }}</option>
-                            {% endfor %}
-                        </select>
-                        <hr>
-                        <label class="form-control-label">Select Form</label>
-                        <select name="semester" data-placeholder="Choose a form to send..." class="standardSelect" tabindex="1">
-                            <option value="" label="default"></option>
-                            {% for form in FORMS_LIST %}
-                            <option value="{{ form }}">{{ form }}</option>
-                            {% endfor %}
-                        </select>
-                        <hr>
-                        <label class="form-control-label">Enter Maximum Lockin period in days</label>
-                        <input name="lockin_days" type="number" class="form-control" aria-required="true" aria-invalid="false">
-                        <hr>
+                        {{ form.csrf_token }}
+                        <label class="form-control-label">Select Semester Type</label><br>
+                        {{ form.semester_type(style="width: 100%") }}
+                        <br><hr>
+                        <label class="form-control-label">Select Semester</label><br>
+                        {{ form.semester_list(style="width: 100%") }}
+                        <br><hr>
+                        <label class="form-control-label">Select Class</label><br>
+                        {{ form.class_list(style="width: 100%") }}
+                        <br><hr>
                         <button type="submit" class="btn btn-lg btn-info btn-block">
                             <span>Send Email</span>
                         </button>
@@ -40,4 +31,50 @@
     </div>
 </div>
 
+{% endblock %}
+
+{% block chartscripts %}
+<script>
+
+    let semester_type_selectedval = document.getElementById('semester_type')
+    let semester_list_selectedval = document.getElementById('semester_list')
+    let class_list_selectedval = document.getElementById('class_list')
+    
+    semester_type_selectedval.onchange = function() {
+        semester_type = semester_type_selectedval.value;
+        
+        fetch('semester/' + semester_type).then(function(response) {
+           response.json().then(function(data) {
+               optionHTML = ""
+               for(let sem of data.semesters) {
+                   
+                   optionHTML += '<option value="' + sem.id + '">' + sem.name + '</option>';
+               }
+               
+               semester_list_selectedval.innerHTML = optionHTML;
+               
+           });
+            
+        });
+    }
+    
+    semester_list_selectedval.onchange = function() {
+        semester = semester_list_selectedval.value;
+        
+        fetch('class/' + semester).then(function(response) {
+           response.json().then(function(data) {
+               optionHTML = ""
+               for(let _class of data.classes) {
+                   
+                   optionHTML += '<option value="' + _class.id + '">' + _class.name + '</option>';
+               }
+               
+               class_list_selectedval.innerHTML = optionHTML;
+               
+           });
+            
+        });
+    }
+
+</script>
 {% endblock %}
