@@ -17,10 +17,10 @@ def jsonifyforms(form_name, new_quest_list):
         f = os.open(file_path, os.O_RDWR | os.O_CREAT)
         os.write(f, json_data)
         os.close(f)
-        return True
+        return "ok"
 
     except Exception as e:
-        return False
+        return str(e)
 
 def list_out_forms():
     return os.listdir(os.path.join(forms_dir_path, ""))

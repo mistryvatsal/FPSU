@@ -66,7 +66,7 @@ def default_question(sid,saving_id,*args):
                     return result[2]
                 else:
                     #print('here')
-                    result=eval('processing.q3()')
+                    result=eval('processing.q3("'+faculty+'","'+name+'")')
                     update_initialiser(['sid',sid],['task','q3'],['flag',0],['working','finish'])
                     saving_feedback(saving_id)
                     return result

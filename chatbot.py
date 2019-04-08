@@ -24,10 +24,10 @@ def handleMessage(msg):
     saving_id=intro_result[0]
     print('saving_id',saving_id)
     #saving_id="Ack8ytVGE50eYKMiGq0GCufusPGQLF48RFu9wV1cvJefpOx77gMhi4O_m3fFwtoRPsFU5hNhAcEM4edLlifD8Owk4_cA=="
-    intro_result=['Vatsal','Nirali Naik','Assistent Professor','Computer Science and Engineering','PIET','nirali.naik@paruluniversity.ac.in']
+    #intro_result=['Vatsal','Nirali Naik','Assistent Professor','Computer Science and Engineering','PIET','nirali.naik@paruluniversity.ac.in']
     with open('backend_final/images/nirali_naik.jpg', 'rb') as f:
         image_data = f.read()
-        emit('get_faculty', {'image_data': image_data.encode('base64'),'fac_name':intro_result[1],'fac_desig':intro_result[2],'fac_dept':intro_result[3],'fac_insti':intro_result[4],'fac_mail':intro_result[5]})
+        emit('get_faculty', {'image_data': intro_result[6],'fac_name':intro_result[2],'fac_desig':intro_result[3],'fac_dept':intro_result[4],'fac_insti':intro_result[5]})
         #print('get_faculty_done')
     #getting suggestions
     f=open('backend_final/corpus_pool/suggestions.json','r')
@@ -38,10 +38,10 @@ def handleMessage(msg):
 
 def handleMessage(msg):
     if(form_type=="default_students"):
-        print('faculty',intro_result[0])
-        question=default.default_question(request.sid,saving_id,[intro_result[1],intro_result[0]])
+        print('faculty',intro_result[2])
+        question=default.default_question(request.sid,saving_id,[intro_result[2],intro_result[1]])
     else:
-        question=custom.greeting(request.sid,[intro_result[1],intro_result[0]])
+        question=custom.greeting(request.sid,[intro_result[2],intro_result[1]])
         print()
         #question=custom.question(request.sid,form_type,[intro_result[1],intro_result[0]])
     if(isinstance(question,list)):
@@ -81,8 +81,3 @@ def main_file():
 
 if __name__ == '__main__':
     socketio.run(app)
-
-
-
-
-

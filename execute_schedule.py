@@ -1,5 +1,7 @@
 import json
 from mysql_dbconnect import *
+import gc
+
 
 def generate_list(semclass_combo):
     semclass_combo_json = json.loads(semclass_combo)
@@ -15,5 +17,8 @@ def generate_list(semclass_combo):
             row_list.append(row[2])
             row_list.append(row[3])
             emailing_data.append(row_list)
+        c.close()
+        conn.close()
+        gc.collect()
 
     return emailing_data

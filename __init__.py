@@ -15,12 +15,12 @@ import execute_schedule
 import _email
 import gc
 import os
+import pickle
 import json
-
+import data_calculation
 
 #Creating the Flask app.
 app = Flask(__name__)
-
 
 class Multi_Select_Form(FlaskForm):
     semester_type = SelectField('semester_type', choices=[('default', 'Select any entry'), ('even', 'Even'), ('odd', 'Odd')])
@@ -42,7 +42,14 @@ def login_required(f):
         else:
             return redirect(url_for('admin_login'))
     return wrap
+@app.route('/admin/triggeranalysis/success/', methods = ['GET', 'POST'])
+def admin_trigger_analysis_success():
 
+    return render_template("triggeranalysis_success.html")
+
+@app.route('/admin/triggeranalysis/')
+def admin_trigger_analysis():
+    return render_template("triggeranalysis.html")
 
 #Route and function for about functionality.
 @app.route('/admin/about/', methods = ['GET', 'POST'])
@@ -53,7 +60,19 @@ def admin_about():
 #Route and function for logs functionality.
 @app.route('/admin/logs/', methods = ['GET', 'POST'])
 def admin_logs():
-    return render_template("logs.html")
+    c, conn = connect_to("fpsu")
+    c.execute("SELECT * FROM email_logs")
+    x = c.fetchall()
+
+    c.close()
+    conn.close()
+    gc.collect()
+
+    logs = []
+    for row in x:
+        log = dict(timestamp=str(row[0]), email=str(row[1]), decoded_code=str(row[2]))
+        logs.append(log)
+    return render_template("logs.html", logs=logs)
 
 
 #Route and function for schedule success functionality.
@@ -182,34 +201,45 @@ def class_list(semester):
 @app.route('/admin/analysis/showreport/', methods = ['GET', 'POST'])
 def admin_analysis_showreport():
     if request.method == "POST":
-        try:
-            err = ""
-            faculty_name = request.form['faculty_name']
-            semester = request.form.getlist('semester')
+        #try:
+        err = ""
+        faculty_name = request.form['faculty_name']
+        semester = request.form.getlist('semester')
 
-            c, conn = connect_to("pumis")
-            c.execute("SELECT post, dept, institute, email, id, avatar FROM faculty_new WHERE full_name=(%s)", (faculty_name))
+        c, conn = connect_to("pumis")
+        c.execute("SELECT post, dept, institute, email, id, avatar FROM faculty_new WHERE full_name=(%s)", (faculty_name))
 
-            x = c.fetchone()
+        x = c.fetchone()
 
-            c.close()
-            conn.close()
-            gc.collect()
+        c.close()
+        conn.close()
+        gc.collect()
 
-            post = x[0]
-            dept = x[1]
-            institute = x[2]
-            email = x[3]
-            id = x[4]
-            avatar = x[5]
+        post = x[0]
+        dept = x[1]
+        institute = x[2]
+        email = x[3]
+        id = x[4]
+        avatar = x[5]
 
-            dept = dept + " Department"
-            img_file_link = "static/images/facuties/" + avatar
-            faculty_mailto_email = "mailto:" + str(email)
-            return render_template("showreport.html", err=err, faculty_name=faculty_name, img_file_link=img_file_link, faculty_mailto_email=faculty_mailto_email, post=post, dept=dept, institute=institute, id=id)
 
-        except Exception as e:
-            return render_template("showreport.html", err=str(e), faculty_name=faculty_name, img_file_link=img_file_link, faculty_mailto_email=faculty_mailto_email, post=post, dept=dept, institute=institute, id=id)
+        dept = dept + " Department"
+        img_file_link = "/static/images/faculties/" + avatar
+        faculty_mailto_email = "mailto:" + str(email)
+
+        with open("reasons_list", "rb") as f:
+            reasons_list = pickle.load(f)
+        with open("positiveList", "rb") as f:
+            positiveList, = pickle.load(f)
+        with open("negativeList", "rb") as f:
+            negativeList = pickle.load(f)
+
+        #reasons_list = data_calculation.save_data()
+        # = data_calculation.calculate_values(faculty_name, semester)
+        return render_template("showreport.html", err=str(semester), faculty_name=faculty_name, img_file_link=img_file_link, faculty_mailto_email=faculty_mailto_email, post=post, dept=dept, institute=institute, id=id, positiveList=positiveList, negativeList=negativeList)
+
+        #except Exception as e:
+        #    return render_template("showreport.html", err=str(e), faculty_name=faculty_name, img_file_link=img_file_link, faculty_mailto_email=faculty_mailto_email, post=post, dept=dept, institute=institute, id=id)
 
 
 
@@ -241,10 +271,13 @@ def admin_createform_success():
             for i in range(1, 11):
                 new_quest_list.append(str(request.form["new_quest_" + str(i)]))
 
-            if customfunc.jsonifyforms(form_name, new_quest_list) is True:
-                err = "Your form is successfully saved and FPSU ChatBot has started learning from it!"
+            resp = customfunc.jsonifyforms(form_name, new_quest_list)
+
+            if resp == "ok":
+                return render_template("createform_success.html", err=resp, FORMS_LIST_count=FORMS_LIST_count)
+
             else:
-                err = "Somthing went wrong. Try again."
+                return render_template("createform_success.html", err=resp, FORMS_LIST_count=FORMS_LIST_count)
 
         return render_template("createform_success.html", err=err, FORMS_LIST_count=FORMS_LIST_count)
 

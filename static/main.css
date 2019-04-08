@@ -5,10 +5,12 @@ footer{
 	text-align: center;
 	width: 63.5vh;
 	position: fixed;
-	bottom: 0;
+	bottom: 10px;
 }
 
-
+.container_fluid{
+	min-width: 100%;
+}
 
 #only_mobile{
 
@@ -33,7 +35,8 @@ animation-duration: 1s;
 	margin: 0px 50px;
 	background-color: #226480;
 	animation-name: box_animate;
-	animation-duration:2s; 
+	animation-duration:2s;
+	padding-bottom:3px;  
 }
 
 @keyframes box_animate {
@@ -153,23 +156,32 @@ li{
 
 #button-addon2{
 	background-color: #b0206b;
-	margin-top: 0px;
-	margin-bottom: 0px;
+	margin: 0px;
 }
 
 #reply_div{
-	
-	
 	padding-top:0px;
 	padding-bottom: 0px; 
 	margin-bottom: 0px;
+	
+	bottom: 0px;
+	width: 100%;
 }
+
+
 #reply_div_in{
 	margin-bottom: 0px;
 	padding-bottom: 0px;
+	margin-left: 0px;
 	background-color: #2E86AB;
+	margin-right: 10px;
+	animation: move_div ease-out 0.3s;
 }
-
+@keyframes move_div {
+  0%   {bottom: -5px;opacity: 0}
+  100%  {bottom: 0px;opacity: 1}
+  
+}
 #reply_input{
 	width: 60%;
 	height: 40px;
@@ -177,9 +189,10 @@ li{
 	font-size: 20px;
 }
 #emoji{
+	overflow-x:scroll;
 	border-top:1px solid #2E86AB;
 	border-radius:5%;
-	height: 20vh;
+	height: 22vh;
 	text-align: center;
 }
 .btn-secondary{

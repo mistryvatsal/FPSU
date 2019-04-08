@@ -82,17 +82,16 @@
           </div>
       </div>  
       
-<div class="col" id="reply_div">
+		<div class="col" id="reply_div">
           <div id="emoji">
-          <!--
-            <button class="btn btn-secondary" type="button" onclick="add_chat('yes_btn')" id="yes_btn" value="Yes">Yes</button>
-            <button class="btn btn-secondary" type="button" onclick="add_chat('no_btn')" id="no_btn" value="No">No</button>
-            <button class="btn btn-secondary" type="button" onclick="add_chat('okay_btn')" id="okay_btn" value="okay">Okay</button>
-            !-->
+          <button class="btn btn-secondary" type="button" onclick="add_chat('Yes')" id="yes_btn" value="Yes">Yes</button>
+            <button class="btn btn-secondary" type="button" onclick="add_chat('No')" id="no_btn" value="No">No</button>
+            <button class="btn btn-secondary" type="button" onclick="add_chat('Okay')" id="okay_btn" value="okay">Okay</button>
+            
           </div>
-          <div class="input-group mb-3" id="reply_div_in">
+          <div class="input-group mb-3" id="reply_div_in" style="padding-right: 0px;padding-left: 1px;">
             <div class="input-group-prepend" id="button-addon3">
-              <img src="images/user.png" class="img-responsive" id="reply_image">
+              <img src="{{ url_for('static',filename='images/user.png') }}" class="img-responsive" id="reply_image">
             </div>
             <input type="text" class="form-control" placeholder="Enter text here"  aria-describedby="button-addon3" id="input">
             <div class="input-group-append">

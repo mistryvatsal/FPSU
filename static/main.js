@@ -117,11 +117,10 @@ socket.on('get_faculty',function(msg){
 	fac_dept=msg['fac_dept'];
 	fac_desig=msg['fac_desig'];;
 	fac_insti=msg['fac_insti'];
-	fac_mail=msg['fac_mail'];
 	if ($(window).width() < 600) {
     text=
 	`<div id="faculty_heading"><h5><b>Faculty Information</b></h5></div>
-        <img class="img-responsive" alt="faculty_image" src="data:image/jpeg;base64,`+fac_img+`" id="faculty_img">
+        <img class="img-responsive" alt="faculty_image" src="`+fac_img+`" id="faculty_img">
         <div id="faculty_desc">
           <p>`+fac_name+`<br>`+fac_desig+`<br>`+fac_dept+`<br>Department</p>
           </div>
@@ -131,10 +130,9 @@ socket.on('get_faculty',function(msg){
 	else{
 	text=
 	`<div id="faculty_heading"><h4><b>Faculty Information</b></h4></div>
-        <img class="img-responsive" alt="faculty_image" src="data:image/jpeg;base64,`+fac_img+`" id="faculty_img">
+        <img class="img-responsive" alt="faculty_image" src="`+fac_img+`" id="faculty_img">
         <div id="faculty_desc">
           <p>`+fac_name+`<br>`+fac_desig+`<br>`+fac_dept+`<br>Department<br>`+fac_insti+`<br></p>
-          <a href="mailto:`+fac_mail+`"><i class="fa fa-envelope-o" style="font-size:36px; color: white;"></i></a>
         </div>`
 	}
 	$("#faculty_info").append(text);
@@ -146,7 +144,6 @@ socket.on('suggestions',function(msg){
 
 	
 	for (var i = 0; i < 5; i++) {
-		console.log(msg[i]);
 		text=`<button class="btn btn-secondary" type="button" onclick="add_chat('`+msg[i]+`')" id="`+msg[i]+`" value="`+msg[i]+`" style="vertical-align: middle;">`+msg[i]+`</button>`;
 		$('#emoji').append(text);
 	}

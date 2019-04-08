@@ -1,3 +1,5 @@
-from secret_hash import *
+from backend_final import execute_sentiment
 
-print(decrypt_string("gAAAAABck8ytVGE50eYKMiGq0GCufusPGQLF48RFu9wV1cvJefpOx77gMhi4O_m3fFwtoRPsFU5hNhAcEM4edLlifD8Owk4_cA=="))
+negative_reasons = execute_sentiment.get_data("default_students_responses.json")
+
+print(negative_reasons)
