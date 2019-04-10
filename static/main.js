@@ -12,6 +12,7 @@
 	});
 
 if ($(window).width() > 600) {
+	$('#reply_div').prop('disabled',true);
 	socket.emit('greet_event',{
 			
 			data: ''
@@ -165,10 +166,8 @@ socket.on('get_question',function(msg){
 	
 	if(msg=="end"){
 		$('#input').val("");
-		$("#yes_btn").prop('disabled',true);
-		$("#no_btn").prop('disabled',true);
-		$("#okay_btn").prop('disabled',true);
-		$( "#input" ).prop( "disabled", true );
+		
+		
 		socket.disconnect()
 	}
 	else{

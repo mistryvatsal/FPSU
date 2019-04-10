@@ -1,23 +1,20 @@
 import json
 import os
 from sentiment_analysis import sentiment
+
+
 def get_data(form_name):
-    
-        
+
+
     #path="/var/www/FPSU/FPSU/backend_final/responses/"
-    
+
     #filepath=os.path.join(path,form_name)
     #f=os.open(filepath, os.O_RDWR | os.O_CREAT)
     #data=os.read(f)
-    f=open('/var/www/FPSU/FPSU/alg252kjaglasj/responses/'+str(form_name),'r')
-    
-    
+    f=open('/var/www/FPSU/FPSU/backend_final/responses/'+ str(form_name),'r')
     data=json.load(f)
-    
     f.close()
     #print(len(data))
-
-    
     #  [u'41', u'51', u'61', u'71', u'81', u'101', u'111', u'141']
     #print(data)
     dictarray=[]
@@ -42,7 +39,7 @@ def get_data(form_name):
     temp=[]
     for i in main_list:
         temp.append(main_list[i])
-    
+
     final_sent_values= sentiment.sentiment_return(temp)
     #print(final_sent_values)
 
@@ -54,6 +51,6 @@ def get_data(form_name):
         dict_temp['reasons']=main_list_reasons[i]
         dict_temp['sent_values']=final_sent_values[j]
         dict['data'].append(dict_temp)
-    print(dict)
+    #print(dict)
     return dict
 #get_data('default_students_responses.json')

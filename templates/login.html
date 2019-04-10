@@ -20,16 +20,17 @@
     <link href='https://fonts.googleapis.com/css?family=Open+Sans:400,600,700,800' rel='stylesheet' type='text/css'>
 
 </head>
-<body class="bg-dark">
+<body class="">
 
     <div class="sufee-login d-flex align-content-center flex-wrap">
         <div class="container">
             <div class="login-content">
-                <div class="login-logo">
+                <div class="login-logo" style="background-color: white;">
                     <a href="index.html">
                         <img class="align-content" src="{{ url_for('static', filename='images/logo.png') }}" alt="">
                     </a>
                 </div>
+                <div style="border-color: darkslategrey; border-width: medium;">
                 <div class="login-form">
                     <form method="POST">
                         <div class="form-group">
@@ -44,6 +45,7 @@
                     </form>
                     <br>
                     <p style="color: red;">{{ err }}</p>
+                </div>
                 </div>
             </div>
         </div>

@@ -4,7 +4,7 @@ from mysql_dbconnect import *
 import gc
 
 
-forms_dir_path = "/var/www/FPSU/FPSU/forms/"
+forms_dir_path = "/var/www/FPSU/FPSU/alg252kjaglasj/forms/"
 
 def jsonifyforms(form_name, new_quest_list):
     try:
@@ -17,10 +17,10 @@ def jsonifyforms(form_name, new_quest_list):
         f = os.open(file_path, os.O_RDWR | os.O_CREAT)
         os.write(f, json_data)
         os.close(f)
-        return "ok"
+        return True
 
     except Exception as e:
-        return str(e)
+        return False
 
 def list_out_forms():
     return os.listdir(os.path.join(forms_dir_path, ""))

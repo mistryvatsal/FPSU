@@ -17,7 +17,7 @@ import gc
 import os
 import pickle
 import json
-import data_calculation
+#import data_calculation
 
 #Creating the Flask app.
 app = Flask(__name__)
@@ -44,8 +44,8 @@ def login_required(f):
     return wrap
 @app.route('/admin/triggeranalysis/success/', methods = ['GET', 'POST'])
 def admin_trigger_analysis_success():
-
-    return render_template("triggeranalysis_success.html")
+    if request.method == "POST":
+        return render_template("triggeranalysis_success.html")
 
 @app.route('/admin/triggeranalysis/')
 def admin_trigger_analysis():
@@ -201,45 +201,35 @@ def class_list(semester):
 @app.route('/admin/analysis/showreport/', methods = ['GET', 'POST'])
 def admin_analysis_showreport():
     if request.method == "POST":
-        #try:
-        err = ""
-        faculty_name = request.form['faculty_name']
-        semester = request.form.getlist('semester')
+        try:
+            err = ""
+            faculty_name = request.form['faculty_name']
+            semester = request.form.getlist('semester')
+            c, conn = connect_to("pumis")
+            c.execute("SELECT post, dept, institute, email, id, avatar FROM faculty_new WHERE full_name=(%s)", (faculty_name))
+            x = c.fetchone()
+            c.close()
+            conn.close()
+            gc.collect()
+            post = x[0]
+            dept = x[1]
+            institute = x[2]
+            email = x[3]
+            id = x[4]
+            avatar = x[5]
+            dept = dept + " Department"
+            img_file_link = "/static/images/faculties/" + avatar
+            faculty_mailto_email = "mailto:" + str(email)
+            #positiveList
 
-        c, conn = connect_to("pumis")
-        c.execute("SELECT post, dept, institute, email, id, avatar FROM faculty_new WHERE full_name=(%s)", (faculty_name))
+            #negativeList#=data_calculation.calculate_values(faculty_name,tuple(semester))
+            #reasons_list = data_calculation.save_data()
+            positiveList = [5,4,3,9,7,8,1,3]
+            negativeList = [5,4,3,9,7,8,1,3]
+            return render_template("showreport.html", err=err, faculty_name=faculty_name, img_file_link=img_file_link, faculty_mailto_email=faculty_mailto_email, post=post, dept=dept, institute=institute, id=id, positiveList=positiveList, negativeList=negativeList)
 
-        x = c.fetchone()
-
-        c.close()
-        conn.close()
-        gc.collect()
-
-        post = x[0]
-        dept = x[1]
-        institute = x[2]
-        email = x[3]
-        id = x[4]
-        avatar = x[5]
-
-
-        dept = dept + " Department"
-        img_file_link = "/static/images/faculties/" + avatar
-        faculty_mailto_email = "mailto:" + str(email)
-
-        with open("reasons_list", "rb") as f:
-            reasons_list = pickle.load(f)
-        with open("positiveList", "rb") as f:
-            positiveList, = pickle.load(f)
-        with open("negativeList", "rb") as f:
-            negativeList = pickle.load(f)
-
-        #reasons_list = data_calculation.save_data()
-        # = data_calculation.calculate_values(faculty_name, semester)
-        return render_template("showreport.html", err=str(semester), faculty_name=faculty_name, img_file_link=img_file_link, faculty_mailto_email=faculty_mailto_email, post=post, dept=dept, institute=institute, id=id, positiveList=positiveList, negativeList=negativeList)
-
-        #except Exception as e:
-        #    return render_template("showreport.html", err=str(e), faculty_name=faculty_name, img_file_link=img_file_link, faculty_mailto_email=faculty_mailto_email, post=post, dept=dept, institute=institute, id=id)
+        except Exception as e:
+            return render_template("showreport.html", err=str(e), faculty_name=faculty_name, img_file_link=img_file_link, faculty_mailto_email=faculty_mailto_email, post=post, dept=dept, institute=institute, id=id)
 
 
 
@@ -273,11 +263,13 @@ def admin_createform_success():
 
             resp = customfunc.jsonifyforms(form_name, new_quest_list)
 
-            if resp == "ok":
-                return render_template("createform_success.html", err=resp, FORMS_LIST_count=FORMS_LIST_count)
+            if resp == True:
+                err = "Your form has been saved. FeedBot has started learning from it!"
+                return render_template("createform_success.html", err=err, FORMS_LIST_count=FORMS_LIST_count)
 
             else:
-                return render_template("createform_success.html", err=resp, FORMS_LIST_count=FORMS_LIST_count)
+                err = "Something went wrong. Please try agani or contact admin."
+                return render_template("createform_success.html", err=err, FORMS_LIST_count=FORMS_LIST_count)
 
         return render_template("createform_success.html", err=err, FORMS_LIST_count=FORMS_LIST_count)
 
