@@ -7,9 +7,9 @@
         <div class="col-lg-4 text-center">
             <button type="button" class="btn btn-outline-primary btn-lg" onclick="GoBackWithRefresh()">Go Back</button>
         </div>
-        <div class="col-lg-4 text-center">
+        <!--div class="col-lg-4 text-center">
             <button type="button" class="btn btn-outline-primary btn-lg" onclick="updateDiv()">Refresh Graph</button>
-        </div>
+        </div-->
     </div>
     <br>
     
@@ -74,8 +74,8 @@
                 <div class="card-header text-center">
                     <strong class="card-title mb-3">Word Cloud</strong>
                 </div>
-                <div class="card-body">
-                    <img src="{{ url_for('static', filename='images/wordcloud.jpg') }}">
+                <div class="card-body" style="height: 600px;">
+                    <img src="{{ url_for('static', filename='images/wordcloud.png') }}">
                 </div>
             </div>
         </div>
@@ -85,19 +85,21 @@
                 <div class="card-header text-center">
                     <strong class="card-title mb-3">Raw Messages</strong>
                 </div>
-                <div class="card-body">
-                    
+                <div class="card-body" style="overflow: scroll; height: 600px;">
+                    {% for raw_message in RAW_MESSAGES %}
+                    <p class="triangle-border right">{{ raw_message }}</p>
+                    {% endfor %}
                 </div>
             </div>
         </div>
     </div>
-    <div class="row justify-content-center">
+    <!--div class="row justify-content-center">
         <div class="col-lg-4"></div>
         <div class="col-lg-4"></div>
         <div class="col-lg-4 text-center">
             <button type="button" class="btn btn-outline-primary btn-lg">Save Report to PDF</button>
         </div>
-    </div>
+    </div-->
 </div>
 
 {% endblock %}
@@ -292,6 +294,7 @@ window.chartColors = {
 }(this));
 </script>
 <script>
+{{ positiveList }}
 var barChartData = {
 			labels: ['Course Completion', 'Punctuality', 'Creativity', 'Problem Solving', 'Knowledge', 'Motivation', 'Interaction', 'CS Skills'],
         
@@ -313,9 +316,7 @@ var barChartData = {
 				data: barChartData,
 				options: {
 					title: {
-						display: true,
-						text: 'Chart.js Bar Chart - Stacked'
-					},
+						display: true					},
 					tooltips: {
 						mode: 'index',
 						intersect: false

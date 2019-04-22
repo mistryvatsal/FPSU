@@ -17,7 +17,8 @@ import gc
 import os
 import pickle
 import json
-#import data_calculation
+import data_calculation
+import wordcloud_generate
 
 #Creating the Flask app.
 app = Flask(__name__)
@@ -222,14 +223,13 @@ def admin_analysis_showreport():
             faculty_mailto_email = "mailto:" + str(email)
             #positiveList
 
-            #negativeList#=data_calculation.calculate_values(faculty_name,tuple(semester))
-            #reasons_list = data_calculation.save_data()
-            positiveList = [5,4,3,9,7,8,1,3]
-            negativeList = [5,4,3,9,7,8,1,3]
-            return render_template("showreport.html", err=err, faculty_name=faculty_name, img_file_link=img_file_link, faculty_mailto_email=faculty_mailto_email, post=post, dept=dept, institute=institute, id=id, positiveList=positiveList, negativeList=negativeList)
+            positiveList,negativeList=data_calculation.calculate_values(faculty_name,tuple(semester))
+            RAW_MESSAGES = data_calculation.save_data()
+            wordcloud_generate.generate_graph()
+            return render_template("showreport.html", err=err, faculty_name=faculty_name, img_file_link=img_file_link, faculty_mailto_email=faculty_mailto_email, post=post, dept=dept, institute=institute, id=id, positiveList=positiveList, negativeList=negativeList, RAW_MESSAGES=RAW_MESSAGES)
 
         except Exception as e:
-            return render_template("showreport.html", err=str(e), faculty_name=faculty_name, img_file_link=img_file_link, faculty_mailto_email=faculty_mailto_email, post=post, dept=dept, institute=institute, id=id)
+            return render_template("showreport.html", err=str(e), faculty_name=faculty_name, img_file_link=img_file_link, faculty_mailto_email=faculty_mailto_email, post=post, dept=dept, institute=institute, id=id, RAW_MESSAGES=RAW_MESSAGES)
 
 
 

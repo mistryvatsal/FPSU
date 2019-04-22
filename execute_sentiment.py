@@ -9,7 +9,7 @@ def get_data(form_name):
     #filepath=os.path.join(path,form_name)
     #f=os.open(filepath, os.O_RDWR | os.O_CREAT)
     #data=os.read(f)
-    f=open('/var/www/FPSU/FPSU/alg252kjaglasj/responses/'+str(form_name),'r')
+    f=open('/var/www/FPSU/FPSU/backend_final/responses/'+str(form_name),'r')
     
     
     data=json.load(f)
@@ -42,7 +42,7 @@ def get_data(form_name):
     temp=[]
     for i in main_list:
         temp.append(main_list[i])
-    os.chdir('/var/www/FPSU/FPSU/backend_final')
+    #os.chdir('/var/www/FPSU/FPSU/backend_final')
     final_sent_values= sentiment.sentiment_return(temp)
     #print(final_sent_values)
 

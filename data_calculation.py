@@ -36,7 +36,7 @@ def save_data():
     c.close()
     conn.close()
     gc.collect()
-    #print(reasons_list)
+    
     return reasons_list
 
 def calculate_values(faculty_fullname, semester):
@@ -56,5 +56,5 @@ def calculate_values(faculty_fullname, semester):
 
     return positiveList,negativeList
 
-print(calculate_values("Darshana Parmar",('8','6')))
-print(save_data())
+#print(calculate_values("Darshana Parmar",('8','6')))
+#print(save_data())
